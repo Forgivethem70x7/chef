@@ -391,7 +391,7 @@ class Chef
     # Load a node by name
     def self.load(name)
       r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.get_rest("nodes/#{escape_node_id(name)}")
+      r.get_rest("nodes/#{name}")
     end
     
     # Remove this node from the CouchDB
@@ -402,7 +402,7 @@ class Chef
     # Remove this node via the REST API
     def destroy
       r = Chef::REST.new(Chef::Config[:chef_server_url])
-      r.delete_rest("nodes/#{Chef::Node.escape_node_id(@name)}")
+      r.delete_rest("nodes/#{@name}")
     end
     
     # Save this node to the CouchDB
@@ -415,7 +415,7 @@ class Chef
     def save
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       begin
-        r.put_rest("nodes/#{Chef::Node.escape_node_id(@name)}", self)
+        r.put_rest("nodes/#{@name}", self)
       rescue Net::HTTPServerException => e
         if e.response.code == "404"
           r.post_rest("nodes", self)
@@ -454,10 +454,6 @@ class Chef
         end
       end
     end
- 
-    def self.escape_node_id(arg=nil)
-      arg.gsub(/\./, '_')
-    end
-  
+
   end
 end

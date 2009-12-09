@@ -588,16 +588,16 @@ class Knife < Thor
     end
 
     def get_node
-      @rest.get_rest("nodes/#{expand_node(options[:node])}")
+      @rest.get_rest("nodes/#{options[:node]}")
     end
 
     def destroy_node
-      @rest.delete_rest("nodes/#{expand_node(options[:node])}")
+      @rest.delete_rest("nodes/#{options[:node]}")
     end
 
     def destroy_nodes(nodelist)
       nodelist.each do |node|
-        @rest.delete_rest("nodes/#{expand_node(node)}")
+        @rest.delete_rest("nodes/#{node}")
       end
     end
 
@@ -613,10 +613,10 @@ class Knife < Thor
     end
 
     def save_node(node)
-      puts "Storing node data for #{expand_node(options[:node])}..."
+      puts "Storing node data for #{options[:node]}..."
       begin
         retries = 5
-        @rest.put_rest("nodes/#{expand_node(options[:node])}", node)
+        @rest.put_rest("nodes/#{options[:node]}", node)
       rescue Net::HTTPFatalError
         retry if (retries -= 1) > 0
       end
@@ -737,14 +737,6 @@ class Knife < Thor
       else
         node.run_list << new_value
       end
-    end
-
-    def expand_node(name)
-      if name =~ /./
-        name = name.dup
-        name.gsub!(".", "_")
-      end
-      name
     end
   }
 end
