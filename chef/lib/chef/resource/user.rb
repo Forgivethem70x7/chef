@@ -29,6 +29,7 @@ class Chef
         @comment = nil
         @uid = nil
         @gid = nil
+        @groups = [],
         @home = nil
         @shell = nil
         @password = nil
@@ -70,6 +71,14 @@ class Chef
           arg,
           :kind_of => [ String, Integer ]
         )
+      end
+      
+      def groups(arg=nil)
+          set_or_return(
+            :groups,
+            arg,
+            :kind_of => [ Array ]
+          )
       end
       
       def home(arg=nil)

@@ -79,6 +79,11 @@ class Chef
             convert_group_name
           end
         end
+        user_groups = []
+        Etc.group do |g|
+            user_groups << g.name if g.mem.include?(@new_resource.username)
+        end
+        @current_resource.groups(user_groups)
         
         @current_resource
       end
@@ -89,7 +94,7 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If the users are identical
       def compare_user
-        [ :uid, :gid, :comment, :home, :shell, :password ].any? do |user_attrib|
+        [ :uid, :gid, :groups, :comment, :home, :shell, :password ].any? do |user_attrib|
           !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
         end
       end
