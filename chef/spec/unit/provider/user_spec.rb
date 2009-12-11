@@ -150,6 +150,7 @@ describe Chef::Provider::User, "compare_user" do
       :comment => "Adam Jacob",
       :uid => 1000,
       :gid => 1000,
+      :groups => ['sysadms'],
       :home => "/home/adam",
       :shell => "/usr/bin/zsh",
       :password => nil,
@@ -161,6 +162,7 @@ describe Chef::Provider::User, "compare_user" do
       :comment => "Adam Jacob",
       :uid => 1000,
       :gid => 1000,
+      :groups => ['sysadms'],
       :home => "/home/adam",
       :shell => "/usr/bin/zsh",
       :password => nil,
@@ -170,7 +172,7 @@ describe Chef::Provider::User, "compare_user" do
     @provider.current_resource = @current_resource
   end
   
-  %w{uid gid comment home shell password}.each do |attribute|
+  %w{uid gid groups comment home shell password}.each do |attribute|
     it "should return true if #{attribute} doesn't match" do
       @new_resource.should_receive(attribute).exactly(2).times.and_return(true)
       @current_resource.should_receive(attribute).once.and_return(false)

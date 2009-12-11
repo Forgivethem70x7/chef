@@ -88,6 +88,9 @@ class Chef
               end
             end
           end
+          if (@current_resource.groups != @new_resource.groups && @new_resource.groups)
+              opts << " -G '#{@new_resource.groups.join(',')}'"
+          end
           if @current_resource.home != @new_resource.home && @new_resource.home
             if @new_resource.supports[:manage_home]
               Chef::Log.debug("Managing the home directory for #{@new_resource}")
