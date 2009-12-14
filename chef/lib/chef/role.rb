@@ -145,9 +145,9 @@ class Chef
       role.default_attributes(o["default_attributes"])
       role.override_attributes(o["override_attributes"])
       if o.has_key?("run_list")
-        role.run_list(o["run_list"]) if o.has_key?("run_list")
-      else
-        role.run_list(o["recipes"]) 
+          role.run_list(o["run_list"])
+      elsif o.has_key?("recipes")
+          role.run_list(o["recipes"])
       end
       role.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       role.couchdb_id = o["_id"] if o.has_key?("_id")
