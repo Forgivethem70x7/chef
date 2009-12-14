@@ -63,15 +63,50 @@ class ChefServerApi::Cookbooks < ChefServerApi::Application
     raise NotFound unless cookbook_files.has_key?(params[:segment].to_sym)
 
     if params[:id]
-      case params[:segment]
-      when "templates","files"
-        serve_segment_preferred(cookbook, params[:segment], cookbook_files[params[:segment].to_sym])
+      if params[:recursive]
+        show_directory(cookbook_files[params[:segment].to_sym])
       else
-        serve_segment_file(cookbook, params[:segment], cookbook_files[params[:segment].to_sym])
+        case params[:segment]
+        when "templates","files"
+          serve_segment_preferred(cookbook, params[:segment], cookbook_files[params[:segment].to_sym])
+        else
+          serve_segment_file(cookbook, params[:segment], cookbook_files[params[:segment].to_sym])
+        end
       end
     else
       display cookbook_files[params[:segment].to_sym]
     end
+  end
+  
+  def show_directory(files)
+    preferences = [
+      "host-#{params[:fqdn]}",
+      "#{params[:platform]}-#{params[:version]}",
+      "#{params[:platform]}",
+      "default"
+    ]
+    id_re = Regexp.quote(params[:id])
+    files = files.select { |file| file[:name] =~ /^#{id_re}/}
+    specs = files.map{ |file| file[:specificity] }.uniq
+    spec = nil
+    preferences.each do |pref|
+      if specs.include?(pref)
+        spec = pref
+        break
+      end
+    end
+    
+    raise NotFound, "Cannot find a suitable #{segment} folder #{params[:id]}" unless spec 
+    
+    @directory_listing = Array.new
+    
+    files.select{ |file| file[:specificity] == spec }.each do |file_to_send|
+      file_to_send[:name] =~ /^#{id_re}\/(.+)/
+      @directory_listing << $1
+    end
+
+
+    display @directory_listing
   end
 
   def serve_segment_preferred(cookbook, segment, files)
